@@ -7,17 +7,18 @@ Use create-react-app and express-generator to setup skeleton for the frontend an
 Use .env to hold important information! (API key should be in .env)
 
 - In React's .env must use REACT*APP*
-  Backend-
+  <!-- Backend- -->
 
-1. Set up /location route, connect router, controller and model.
-2. Create a location Model
-3. Set up all the functionalities in the Controller for these routes:
+<!-- 1. Set up /location route, connect router, controller and model. -->
+<!-- 2. Create a location Model -->
+<!-- 3. Set up all the functionalities in the Controller for these routes: -->
 
-- /get-all-searched-locations
-- /add-location
-- /delete-location-by-id
-  Frontend-
-  Similar setup to the todo app as a Weather App. Remember to make different components based on functionalities below:
+<!-- - /get-all-searched-locations -->
+<!-- - /add-location -->
+<!-- - /delete-location-by-id -->
+
+Frontend-
+Similar setup to the todo app as a Weather App. Remember to make different components based on functionalities below:
 
 1. Should have an input text to search for weather based on location
 2. After you enter the location and search:

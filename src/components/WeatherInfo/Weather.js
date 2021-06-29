@@ -1,0 +1,149 @@
+import React, { Component } from "react";
+import axios from "axios";
+
+import "./Weather.css";
+import LocationList from "../LocationList/LocationList";
+import WeatherSection from "../WeatherInfo/WeatherSection";
+
+const URL = "http://localhost:8080";
+export class Weather extends Component {
+  state = {
+    locationList: [],
+    locationInput: "",
+    error: null,
+    errorMessage: "",
+    currentLocation: "haiti",
+    country: "haiti",
+    description: "hot",
+    temperature: "99",
+  };
+
+  async componentDidMount() {
+    try {
+      let allLocations = await axios.get(
+        `${URL}/api/location/get-all-searched-locations`
+      );
+      this.setState({
+        locationList: allLocations.data.payload,
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  handleLocationOnChange = (event) => {
+    this.setState({
+      locationInput: event.target.value,
+      error: null,
+      errorMessage: "",
+    });
+  };
+
+  handleOnSubmit = async (event) => {
+    event.preventDefault();
+
+    let q = this.state.locationInput;
+
+    if (this.state.locationInput.length === 0) {
+      this.setState({
+        error: true,
+        errorMessage: "Cannot enter a blank location!",
+      });
+    } else {
+      try {
+        let fetchAPIkeyData = await axios.get(`${URL}/api/appid/get-api-key`);
+        let appid = fetchAPIkeyData.data.payload;
+        let enterredLocation = await axios.post(
+          `http://api.openweathermap.org/data/2.5/weather?q=${q}&appid=${appid}`
+        );
+        let savedLocation = await axios.post(
+          `${URL}/api/location/add-location`,
+          { location: this.state.locationInput }
+        );
+        console.log(enterredLocation.data.name);
+        console.log(enterredLocation.data.sys.country);
+        console.log(enterredLocation.data.weather[0].description);
+        console.log(((enterredLocation.data.main.temp - 273.15) * 9) / 5 + 32);
+        let newArray = [
+          ...this.state.locationList,
+          {
+            location: savedLocation.data.payload.location,
+            _id: savedLocation.data.payload._id,
+          },
+        ];
+        this.setState({
+          locationList: newArray,
+          locationInput: "",
+        });
+      } catch (e) {
+        console.log(e);
+      }
+    }
+  };
+
+  handleDeleteByID = async (_id) => {
+    try {
+      let deletedLocation = await axios.delete(
+        `${URL}/api/location/delete-location-by-id/${_id}`
+      );
+      let filteredArray = this.state.locationList.filter(
+        (location) => location._id !== deletedLocation.data.payload._id
+      );
+      this.setState({
+        locationList: filteredArray,
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  render() {
+    return (
+      <div>
+        <div className="form-div">
+          <form onSubmit={this.handleOnSubmit}>
+            <input
+              type="text"
+              className="weather-input"
+              onChange={this.handleLocationOnChange}
+              value={this.state.locationInput}
+              autoFocus
+            />
+            <button type="submit" className="form-button">
+              Submit
+            </button>
+          </form>
+        </div>
+        {this.state.errorMessage && (
+          <div style={{ color: "red", fontSize: "20px" }}>
+            {this.state.errorMessage}
+          </div>
+        )}
+        <div className="main-wrap">
+          <table>
+            <tr>
+              <th colSpan="2">Recently Searched Locations</th>
+            </tr>
+            {this.state.locationList.map((item) => {
+              return (
+                <LocationList
+                  location={item}
+                  key={item._id}
+                  handleDeleteByID={this.handleDeleteByID}
+                />
+              );
+            })}
+          </table>
+          <WeatherSection
+            location={this.state.currentLocation}
+            country={this.state.country}
+            description={this.state.description}
+            temperature={this.state.temperature}
+          />
+        </div>
+      </div>
+    );
+  }
+}
+
+export default Weather;
