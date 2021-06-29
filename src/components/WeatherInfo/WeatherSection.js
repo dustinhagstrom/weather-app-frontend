@@ -4,24 +4,27 @@ export class WeatherSection extends Component {
   render() {
     const { location, country, description, temperature } = this.props;
     return (
-      <div className="weather-div">
-        <div>
-          <span>Location:</span>
-          {location}
-        </div>
-        <div>
-          <span>Country:</span>
-          {country}
-        </div>
-        <div>
-          <span>Description:</span>
-          {description}
-        </div>
-        <div>
-          <span>Temperature:</span>
-          {temperature}
-        </div>
-      </div>
+      <table className="weather-table">
+        <tbody>
+          <th>Our Current Weather</th>
+          <tr>
+            <span>Location: </span>
+            {location}
+          </tr>
+          <tr>
+            <span>Country: </span>
+            {country}
+          </tr>
+          <tr>
+            <span>Description: </span>
+            {description}
+          </tr>
+          <tr>
+            <span>Temperature: </span>
+            {temperature}
+          </tr>
+        </tbody>
+      </table>
     );
   }
 }

@@ -5,17 +5,17 @@ import "./Weather.css";
 import LocationList from "../LocationList/LocationList";
 import WeatherSection from "../WeatherInfo/WeatherSection";
 
-const URL = "http://localhost:8080";
+const URL = "http://localhost:8081";
 export class Weather extends Component {
   state = {
     locationList: [],
     locationInput: "",
     error: null,
     errorMessage: "",
-    currentLocation: "haiti",
-    country: "haiti",
-    description: "hot",
-    temperature: "99",
+    currentLocation: "",
+    country: "",
+    description: "",
+    temperature: "",
   };
 
   async componentDidMount() {
@@ -74,9 +74,21 @@ export class Weather extends Component {
         this.setState({
           locationList: newArray,
           locationInput: "",
+          currentLocation: enterredLocation.data.name,
+          country: enterredLocation.data.sys.country,
+          description: enterredLocation.data.weather[0].description,
+          temperature:
+            (
+              ((enterredLocation.data.main.temp - 273.15) * 9) / 5 +
+              32
+            ).toFixed() + " F",
         });
       } catch (e) {
-        console.log(e);
+        this.setState({
+          error: true,
+          errorMessage:
+            "Sorry, the city you enterred doesn't match any cities in our system!",
+        });
       }
     }
   };
@@ -113,14 +125,15 @@ export class Weather extends Component {
               Submit
             </button>
           </form>
+
+          {this.state.errorMessage && (
+            <div style={{ color: "red", fontSize: "20px" }}>
+              {this.state.errorMessage}
+            </div>
+          )}
         </div>
-        {this.state.errorMessage && (
-          <div style={{ color: "red", fontSize: "20px" }}>
-            {this.state.errorMessage}
-          </div>
-        )}
         <div className="main-wrap">
-          <table>
+          <table className="all-locations">
             <tr>
               <th colSpan="2">Recently Searched Locations</th>
             </tr>
