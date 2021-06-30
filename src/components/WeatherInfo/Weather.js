@@ -53,17 +53,16 @@ export class Weather extends Component {
       try {
         let fetchAPIkeyData = await axios.get(`${URL}/api/appid/get-api-key`);
         let appid = fetchAPIkeyData.data.payload;
-        let enterredLocation = await axios.post(
-          `http://api.openweathermap.org/data/2.5/weather?q=${q}&appid=${appid}`
+        let enterredLocation = await axios.get(
+          `https://api.openweathermap.org/data/2.5/weather?q=${q}&appid=${appid}&units=imperial`
         );
         let savedLocation = await axios.post(
           `${URL}/api/location/add-location`,
           { location: this.state.locationInput }
         );
         console.log(enterredLocation.data.name);
-        console.log(enterredLocation.data.sys.country);
         console.log(enterredLocation.data.weather[0].description);
-        console.log(((enterredLocation.data.main.temp - 273.15) * 9) / 5 + 32);
+        console.log(enterredLocation.data.main.temp);
         let newArray = [
           ...this.state.locationList,
           {
@@ -77,17 +76,13 @@ export class Weather extends Component {
           currentLocation: enterredLocation.data.name,
           country: enterredLocation.data.sys.country,
           description: enterredLocation.data.weather[0].description,
-          temperature:
-            (
-              ((enterredLocation.data.main.temp - 273.15) * 9) / 5 +
-              32
-            ).toFixed() + " F",
+          temperature: enterredLocation.data.main.temp.toFixed() + " F",
         });
       } catch (e) {
         this.setState({
           error: true,
           errorMessage:
-            "Sorry, the city you enterred doesn't match any cities in our system!",
+            "Sorry, the city you entered doesn't match any cities in our system!",
         });
       }
     }
